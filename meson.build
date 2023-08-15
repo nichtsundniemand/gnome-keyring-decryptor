@@ -13,3 +13,12 @@ project(
 		'warning_level=3'
 	]
 )
+
+subdir('src')
+
+executable(
+	meson.project_name(),
+	link_with: main_lib,
+	cpp_args: '-DVERSION_STRING=' + meson.project_version(),
+	install: true
+)

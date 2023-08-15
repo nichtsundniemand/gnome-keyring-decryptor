@@ -34,9 +34,14 @@ $ meson setuo build
 $ ninja -C build
 ```
 
+Afterwards, if everything went well, the executable can be found under `build/gnome-keyring-decryptor`.
+
 ## Usage
 
-TBD.
+To use this tool simply call `gnome-keyring-decryptor <keyring>` with `<keyring>`
+being the path to the keyring-file on the command line.
+
+The contents of the keyring will then be output on `stdout`.
 
 ## References
 
