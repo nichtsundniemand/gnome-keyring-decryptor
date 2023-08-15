@@ -1,0 +1,21 @@
+# Copyright 2023 Rufus Maurice Schäfing (wirklichniemand, nichtsundniemand)
+#
+# This file is part of `gnome-keyring-decryptor` and thus licensed under the terms
+# of the GNU General Public License Version 3.
+# A copy of this license can be found in the project's `LICENSE`-file.
+#
+Usage:
+  @exe_name@ <keyring>
+  @exe_name@ -h | --help
+  @exe_name@ --version
+
+Description:
+  This tool parses and decrypts a \"gnome-keyring\" keyring-file and dumps it's
+  contents as a JSON string.
+
+  The file to be decoded is passed on the command line through the <keyring>
+  parameter.
+
+Options:
+  -h --help   Show this help.
+  --version	  Show program version.
