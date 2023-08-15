@@ -9,6 +9,25 @@ I am really surprised this didn't exist. There is a keyring-dump utility in the
 `gnome-keyring`-repo, but since the output-format of that utility is not really suitable
 for further processing, I decided to create this tool.
 
+## Building & Hacking
+
+This project is built using [`meson`](https://mesonbuild.com/), so you will need that.
+In order to use `meson` you will also need a build-backend. I simply use [`ninja`](https://ninja-build.org/)
+which is the default.
+
+The provided `nix`-flake will yield a dev-environment containing all the necessary
+dependencies, so using it is recommended.
+
+Since this project also includes an `.envrc` using [`nix-direnv`](https://github.com/nix-community/nix-direnv)
+for use with the provided flake, I strongly recommend setting up [`direnv`](https://direnv.net/)
+as well.
+
+To build this project simply follow the usual `meson`-procedure:
+```sh
+$ meson setuo build
+$ ninja -C build
+```
+
 ## Usage
 
 TBD.

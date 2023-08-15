@@ -17,7 +17,10 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in {
       devShells.default = pkgs.mkShell {
-        packages = [];
+        packages = [
+          pkgs.meson
+          pkgs.ninja
+        ];
       };
     });
 }
