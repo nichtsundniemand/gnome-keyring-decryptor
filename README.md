@@ -22,6 +22,12 @@ Since this project also includes an `.envrc` using [`nix-direnv`](https://github
 for use with the provided flake, I strongly recommend setting up [`direnv`](https://direnv.net/)
 as well.
 
+Build depencies:
+ * [`docopt.c`](https://github.com/docopt/docopt.c): For generating the argument parser
+   in accordance with the [`docopt`](http://docopt.org/)-specification.
+
+   Meson needs to be able to find this in your Python's search-path.
+
 To build this project simply follow the usual `meson`-procedure:
 ```sh
 $ meson setuo build
