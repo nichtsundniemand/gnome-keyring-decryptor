@@ -38,7 +38,7 @@ Afterwards, if everything went well, the executable can be found under `build/gn
 
 ## Usage
 
-To use this tool simply call `gnome-keyring-decryptor <keyring>` with `<keyring>`
+To use this tool simply call `gnome-keyring-decryptor --keyring=<file>` with `<file>`
 being the path to the keyring-file on the command line.
 
 The contents of the keyring will then be output on `stdout`.
