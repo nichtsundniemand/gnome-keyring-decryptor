@@ -1,0 +1,20 @@
+name: "Push actions"
+on:
+  push:
+jobs:
+  debug-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v22
+      - name: Build binary
+        uses: workflow/nix-shell-action@v3.3.0
+        with:
+          flakes-from-devshell: true
+          script: |
+            meson setup --debug build
+            meson install -C build --destdir out
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: build/out
