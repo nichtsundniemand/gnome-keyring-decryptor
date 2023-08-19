@@ -40,10 +40,14 @@
 
       devShells.default = pkgs.mkShell {
         packages = [
-          pkgs.meson
           pkgs.ninja
           (pkgs.python311.withPackages
-            (ps: with ps; [self.docopt-c.${system}]))
+            (ps: with ps; [
+	            self.docopt-c.${system}
+	            gcovr
+	            meson
+            ]))
+          pkgs.valgrind
         ];
       };
     });

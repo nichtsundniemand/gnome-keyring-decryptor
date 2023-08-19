@@ -1,0 +1,52 @@
+name: "Push actions"
+on:
+  push:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v22
+      - name: Run tests
+        uses: workflow/nix-shell-action@v3.3.0
+        with:
+          flakes-from-devshell: true
+          script: |
+            meson setup --debug -Db_coverage=true build
+            meson test -C build
+            meson test -C build --wrapper valgrind
+      - uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: |
+            build/meson-logs/testlog.txt
+            build/meson-logs/testlog.json
+            build/meson-logs/testlog-valgrind.txt
+            build/meson-logs/testlog-valgrind.json
+      - name: Calculate test coverage
+        uses: workflow/nix-shell-action@v3.3.0
+        with:
+          flakes-from-devshell: true
+          script: |
+            ninja -C build coverage-html
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-report
+          path: build/meson-logs/coveragereport
+  debug-build:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v22
+      - name: Build binary
+        uses: workflow/nix-shell-action@v3.3.0
+        with:
+          flakes-from-devshell: true
+          script: |
+            meson setup --debug build
+            meson install -C build --destdir out
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-output
+          path: build/out
