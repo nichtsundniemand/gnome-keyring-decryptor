@@ -9,3 +9,5 @@ keyring_lib = both_libraries(
 	'keyring.c',
 	c_args: '-D_DEFAULT_SOURCE'
 )
+
+subdir('test')
