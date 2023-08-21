@@ -10,39 +10,8 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include <setjmp.h>
-#include <stdarg.h>
-#include <cmocka.h>
-
+#include "common.h"
 #include "../internal/keyring.h"
-
-struct no_input_state {
-	int empty_fd;
-};
-
-int setup_no_input(void **state) {
-	struct no_input_state *test_state = test_malloc(sizeof(struct no_input_state));
-	assert_non_null(test_state);
-	*test_state = (struct no_input_state){
-		.empty_fd = memfd_create("", MFD_CLOEXEC),
-	};
-
-	assert_int_not_equal(-1, test_state->empty_fd);
-
-	*state = test_state;
-	return 0;
-}
-
-int teardown_no_input(void **state) {
-	assert_non_null(*state);
-	struct no_input_state *test_state = *state;
-
-	assert_int_not_equal(-1, test_state->empty_fd);
-	assert_int_equal(0, close(test_state->empty_fd));
-
-	test_free(test_state);
-	return 0;
-}
 
 struct read_uint_state {
 	uint64_t magic;

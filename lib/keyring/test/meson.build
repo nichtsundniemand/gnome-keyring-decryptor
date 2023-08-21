@@ -13,7 +13,7 @@ foreach test_case: test_cases
 		test_case,
 		executable(
 			test_case,
-			test_case + '.c',
+			test_case + '.c', 'common.c',
 			dependencies: dependency('cmocka'),
 			link_with: keyring_lib,
 			install: false
