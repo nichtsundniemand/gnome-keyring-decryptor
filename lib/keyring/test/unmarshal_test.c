@@ -26,6 +26,15 @@ void keystore_attribute_unmarshal_should_fail_on_invalid_fd() {
 	assert_keystore_attribute_empty(&value);
 }
 
+void keystore_attribute_unmarshal_should_fail_on_no_input(void **state) {
+	struct no_input_state *test_state = *state;
+
+	int err = 0;
+	struct keystore_attribute value = keystore_attribute_unmarshal(test_state->empty_fd, &err);
+	assert_int_not_equal(0, err);
+	assert_keystore_attribute_empty(&value);
+}
+
 void assert_keystore_keyring_item_empty(struct keystore_keyring_item *item) {
 	assert_non_null(item);
 	assert_int_equal(0, item->id);
@@ -37,6 +46,15 @@ void assert_keystore_keyring_item_empty(struct keystore_keyring_item *item) {
 void keystore_keyring_item_unmarshal_should_fail_on_invalid_fd() {
 	int err = 0;
 	struct keystore_keyring_item value = keystore_keyring_item_unmarshal(-1, &err);
+	assert_int_not_equal(0, err);
+	assert_keystore_keyring_item_empty(&value);
+}
+
+void keystore_keyring_item_unmarshal_should_fail_on_no_input(void **state) {
+	struct no_input_state *test_state = *state;
+
+	int err = 0;
+	struct keystore_keyring_item value = keystore_keyring_item_unmarshal(test_state->empty_fd, &err);
 	assert_int_not_equal(0, err);
 	assert_keystore_keyring_item_empty(&value);
 }
@@ -70,11 +88,23 @@ void keyring_unmarshal_should_fail_on_invalid_fd() {
 	assert_keyring_empty(&value);
 }
 
+void keyring_unmarshal_should_fail_on_no_input(void **state) {
+	struct no_input_state *test_state = *state;
+
+	int err = 0;
+	struct keyring value = keyring_unmarshal(test_state->empty_fd, &err);
+	assert_int_not_equal(0, err);
+	assert_keyring_empty(&value);
+}
+
 int main() {
 	const struct CMUnitTest tests[] = {
 		cmocka_unit_test(keystore_attribute_unmarshal_should_fail_on_invalid_fd),
+		cmocka_unit_test_setup_teardown(keystore_attribute_unmarshal_should_fail_on_no_input, setup_no_input, teardown_no_input),
 		cmocka_unit_test(keystore_keyring_item_unmarshal_should_fail_on_invalid_fd),
-		cmocka_unit_test(keyring_unmarshal_should_fail_on_invalid_fd)
+		cmocka_unit_test_setup_teardown(keystore_keyring_item_unmarshal_should_fail_on_no_input, setup_no_input, teardown_no_input),
+		cmocka_unit_test(keyring_unmarshal_should_fail_on_invalid_fd),
+		cmocka_unit_test_setup_teardown(keyring_unmarshal_should_fail_on_no_input, setup_no_input, teardown_no_input)
 	};
 
 	return cmocka_run_group_tests(tests, NULL, NULL);
