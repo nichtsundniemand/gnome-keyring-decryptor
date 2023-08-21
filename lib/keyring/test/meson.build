@@ -4,17 +4,20 @@
 # of the GNU General Public License Version 3.
 # A copy of this license can be found in the project's `LICENSE`-file.
 
+cmocka_dep = dependency('cmocka')
+
 test_cases = [
-	'read_test'
+	'read',
+	'unmarshal'
 ]
 
 foreach test_case: test_cases
 	test(
-		test_case,
+		test_case + '_test',
 		executable(
-			test_case,
-			test_case + '.c', 'common.c',
-			dependencies: dependency('cmocka'),
+			test_case + '_test',
+			test_case + '_test.c', 'common.c',
+			dependencies: cmocka_dep,
 			link_with: keyring_lib,
 			install: false
 		),
