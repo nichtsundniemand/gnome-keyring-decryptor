@@ -43,9 +43,9 @@
           pkgs.ninja
           (pkgs.python311.withPackages
             (ps: with ps; [
-	            self.docopt-c.${system}
-	            gcovr
-	            meson
+              self.docopt-c.${system}
+              gcovr
+              meson
             ]))
           pkgs.valgrind
         ];
