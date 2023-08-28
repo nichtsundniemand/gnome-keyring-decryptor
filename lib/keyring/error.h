@@ -19,6 +19,7 @@ struct error;
 typedef struct error *error_t;
 
 char *error_format(error_t err);
+void error_trace(error_t err);
 void error_free(error_t err);
 
 error_t error_errno_new(const char *file, const char *function, const unsigned int line, error_t prev, int number);

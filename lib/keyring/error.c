@@ -7,6 +7,7 @@
 
 #include "error.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -23,6 +24,12 @@ struct error {
 
 char *error_format(struct error *error) {
 	return error->format(error);
+}
+
+void error_trace(error_t error) {
+	for(error_t current = error; current != NULL; current = current->prev) {
+		fprintf(stderr, "%s: %s: %u\n\t%s\n", current->file, current->function, current->line, error_format(current));
+	}
 }
 
 void error_free(struct error *error) {
