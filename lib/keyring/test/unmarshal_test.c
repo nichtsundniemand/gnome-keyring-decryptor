@@ -23,18 +23,20 @@ void assert_keystore_attribute_empty(struct keystore_attribute *attribute) {
 }
 
 void keystore_attribute_unmarshal_should_fail_on_invalid_fd() {
-	int err = 0;
+	error_t err = 0;
 	struct keystore_attribute value = keystore_attribute_unmarshal(-1, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 	assert_keystore_attribute_empty(&value);
 }
 
 void keystore_attribute_unmarshal_should_fail_on_no_input(void **state) {
 	struct no_input_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	struct keystore_attribute value = keystore_attribute_unmarshal(test_state->empty_fd, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 	assert_keystore_attribute_empty(&value);
 }
 
@@ -101,15 +103,15 @@ int teardown_proper_attribute(void **state) {
 void keystore_attribute_unmarshal_should_succeed_and_return_value_on_proper_input(void **state) {
 	struct proper_attribute_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	struct keystore_attribute string_attribute = keystore_attribute_unmarshal(test_state->string_fd, &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_string_equal(test_state->string_attribute.name, string_attribute.name);
 	assert_int_equal(test_state->string_attribute.type, string_attribute.type);
 	assert_string_equal(test_state->string_attribute.hash.string, string_attribute.hash.string);
 
 	struct keystore_attribute uint32_attribute = keystore_attribute_unmarshal(test_state->uint32_fd, &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_string_equal(test_state->uint32_attribute.name, uint32_attribute.name);
 	assert_int_equal(test_state->uint32_attribute.type, uint32_attribute.type);
 	assert_int_equal(test_state->uint32_attribute.hash.uint32, uint32_attribute.hash.uint32);
@@ -127,18 +129,20 @@ void assert_keystore_keyring_item_empty(struct keystore_keyring_item *item) {
 }
 
 void keystore_keyring_item_unmarshal_should_fail_on_invalid_fd() {
-	int err = 0;
+	error_t err = 0;
 	struct keystore_keyring_item value = keystore_keyring_item_unmarshal(-1, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 	assert_keystore_keyring_item_empty(&value);
 }
 
 void keystore_keyring_item_unmarshal_should_fail_on_no_input(void **state) {
 	struct no_input_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	struct keystore_keyring_item value = keystore_keyring_item_unmarshal(test_state->empty_fd, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 	assert_keystore_keyring_item_empty(&value);
 }
 
@@ -195,9 +199,9 @@ int teardown_proper_item(void **state) {
 void keystore_keyring_item_unmarshal_should_succeed_and_return_value_on_proper_input(void **state) {
 	struct proper_item_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	struct keystore_keyring_item value = keystore_keyring_item_unmarshal(test_state->fd, &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_int_equal(test_state->item.id, value.id);
 	assert_int_equal(test_state->item.type, value.type);
 	assert_int_equal(test_state->item.num_attributes, value.num_attributes);
@@ -234,18 +238,20 @@ void assert_keyring_empty(struct keyring *keyring) {
 }
 
 void keyring_unmarshal_should_fail_on_invalid_fd() {
-	int err = 0;
+	error_t err = 0;
 	struct keyring value = keyring_unmarshal(-1, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 	assert_keyring_empty(&value);
 }
 
 void keyring_unmarshal_should_fail_on_no_input(void **state) {
 	struct no_input_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	struct keyring value = keyring_unmarshal(test_state->empty_fd, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 	assert_keyring_empty(&value);
 }
 
@@ -332,9 +338,9 @@ int teardown_proper_keyring(void **state) {
 void keyring_unmarshal_should_succeed_and_return_value_on_proper_input(void **state) {
 	struct proper_keyring_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	struct keyring value = keyring_unmarshal(test_state->fd, &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_int_equal(test_state->keyring.version.version, value.version.version);
 	assert_int_equal(test_state->keyring.version.crypto, value.version.crypto);
 	assert_int_equal(test_state->keyring.version.hash, value.version.hash);

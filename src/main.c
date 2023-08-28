@@ -25,29 +25,13 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	int err = 0;
+	error_t err = NULL;
 	struct keyring keyring = keyring_unmarshal(fd, &err);
 
-	if(err < 0) {
-		fprintf(stderr, "Failed to unmarshal \"%s\": %s\n", args.keyring, strerror(err));
+	if(err != NULL) {
+		fprintf(stderr, "Failed to unmarshal \"%s\": %s\n", args.keyring, error_format(err));
 
-		close(fd);
-		return 1;
-	}
-
-	if(err > 0) {
-		char *err_str = NULL;
-		switch(err) {
-			case 1:
-				err_str = "Not enough bytes in input";
-				break;
-			case 2:
-				err_str = "Signature mismatch\n";
-				break;
-		}
-
-		fprintf(stderr, "Failed to unmarshal \"%s\": %s\n", args.keyring, err_str);
-
+		error_free(err);
 		close(fd);
 		return 1;
 	}

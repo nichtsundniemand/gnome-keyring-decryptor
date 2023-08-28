@@ -10,6 +10,8 @@
 
 #include <stdint.h>
 
+#include "error.h"
+
 struct keyring_version {
 	uint16_t version;
 	uint8_t  crypto;
@@ -29,7 +31,7 @@ struct keyring {
 	struct keystore_keyring_item *items;
 };
 
-struct keyring keyring_unmarshal(int fd, int *err);
+struct keyring keyring_unmarshal(int fd, error_t *err);
 void keyring_marshal(struct keyring *keyring);
 void keyring_free(struct keyring *keyring);
 

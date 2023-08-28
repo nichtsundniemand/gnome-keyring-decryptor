@@ -6,7 +6,7 @@
 
 keyring_lib = both_libraries(
 	'keyring',
-	'keyring.c',
+	'keyring.c', 'error.c',
 	c_args: '-D_DEFAULT_SOURCE'
 )
 

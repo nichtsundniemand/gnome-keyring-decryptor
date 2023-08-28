@@ -113,7 +113,7 @@ void keyring_free(struct keyring *keyring) {
 	keyring->items = NULL;
 }
 
-uint8_t keystore_read_uint8(int fd, int *err) {
+uint8_t keystore_read_uint8(int fd, error_t *err) {
 	uint8_t value = 0;
 	ssize_t read_size = read(fd, &value, sizeof(value));
 
@@ -122,9 +122,9 @@ uint8_t keystore_read_uint8(int fd, int *err) {
 	}
 
 	if(read_size == -1) {
-		*err = errno;
+		*err = error_errno_make(NULL, errno);
 	} else if(read_size != sizeof(uint8_t)) {
-		*err = 1;
+		*err = error_read_make(NULL, ERROR_READ_TYPE_EOF);
 	} else {
 		*err = 0;
 	}
@@ -132,7 +132,7 @@ uint8_t keystore_read_uint8(int fd, int *err) {
 	return value;
 }
 
-uint16_t keystore_read_uint16(int fd, int *err) {
+uint16_t keystore_read_uint16(int fd, error_t *err) {
 	uint16_t read_buf = 0;
 	ssize_t read_size = read(fd, &read_buf, sizeof(read_buf));
 
@@ -143,9 +143,9 @@ uint16_t keystore_read_uint16(int fd, int *err) {
 	}
 
 	if(read_size == -1) {
-		*err = errno;
+		*err = error_errno_make(NULL, errno);
 	} else if(read_size != sizeof(uint16_t)) {
-		*err = 1;
+		*err = error_read_make(NULL, ERROR_READ_TYPE_EOF);
 	} else {
 		*err = 0;
 	}
@@ -153,7 +153,7 @@ uint16_t keystore_read_uint16(int fd, int *err) {
 	return value;
 }
 
-uint32_t keystore_read_uint32(int fd, int *err) {
+uint32_t keystore_read_uint32(int fd, error_t *err) {
 	uint32_t read_buf = 0;
 	ssize_t read_size = read(fd, &read_buf, sizeof(read_buf));
 
@@ -164,9 +164,9 @@ uint32_t keystore_read_uint32(int fd, int *err) {
 	}
 
 	if(read_size == -1) {
-		*err = errno;
+		*err = error_errno_make(NULL, errno);
 	} else if(read_size != sizeof(uint32_t)) {
-		*err = 1;
+		*err = error_read_make(NULL, ERROR_READ_TYPE_EOF);
 	} else {
 		*err = 0;
 	}
@@ -174,7 +174,7 @@ uint32_t keystore_read_uint32(int fd, int *err) {
 	return value;
 }
 
-uint64_t keystore_read_uint64(int fd, int *err) {
+uint64_t keystore_read_uint64(int fd, error_t *err) {
 	uint64_t read_buf = 0;
 	ssize_t read_size = read(fd, &read_buf, sizeof(read_buf));
 
@@ -185,9 +185,9 @@ uint64_t keystore_read_uint64(int fd, int *err) {
 	}
 
 	if(read_size == -1) {
-		*err = errno;
+		*err = error_errno_make(NULL, errno);
 	} else if(read_size != sizeof(uint64_t)) {
-		*err = 1;
+		*err = error_read_make(NULL, ERROR_READ_TYPE_EOF);
 	} else {
 		*err = 0;
 	}
@@ -195,7 +195,7 @@ uint64_t keystore_read_uint64(int fd, int *err) {
 	return value;
 }
 
-void keystore_read_bytes(int fd, void *buf, uint32_t size, int *err) {
+void keystore_read_bytes(int fd, void *buf, uint32_t size, error_t *err) {
 	ssize_t read_size = read(fd, buf, size);
 
 	if(err == NULL) {
@@ -203,20 +203,20 @@ void keystore_read_bytes(int fd, void *buf, uint32_t size, int *err) {
 	}
 
 	if(read_size == -1) {
-		*err = errno;
+		*err = error_errno_make(NULL, errno);
 	} else if(read_size != size) {
-		*err = 1;
+		*err = error_read_make(NULL, ERROR_READ_TYPE_EOF);
 	} else {
 		*err = 0;
 	}
 }
 
-char *keystore_read_string(int fd, int *err) {
-	int size_err = 0;
+char *keystore_read_string(int fd, error_t *err) {
+	error_t size_err = NULL;
 	uint32_t size = keystore_read_uint32(fd, &size_err);
 	if(size_err != 0) {
 		if(err != NULL) {
-			*err = size_err;
+			*err = error_read_make(size_err, ERROR_READ_TYPE_CHILD_ERROR);
 		}
 
 		return NULL;
@@ -230,12 +230,12 @@ char *keystore_read_string(int fd, int *err) {
 
 	// keystore-strings are not null-terminated (see docs/file-format.txt)
 	char *string = malloc(size + 1);
-	int string_err = 0;
+	error_t string_err = NULL;
 	keystore_read_bytes(fd, string, size, &string_err);
 
 	if(string_err != 0) {
 		if(err != NULL) {
-			*err = string_err;
+			*err = error_read_make(string_err, ERROR_READ_TYPE_CHILD_ERROR);
 		}
 
 		free(string);
@@ -251,17 +251,19 @@ char *keystore_read_string(int fd, int *err) {
 	return string;
 }
 
-struct keystore_attribute keystore_attribute_unmarshal(int fd, int *err) {
-	int local_err = 0;
+struct keystore_attribute keystore_attribute_unmarshal(int fd, error_t *err) {
+	error_t local_err = NULL;
 	struct keystore_attribute attribute = {0};
 
 	attribute.name = keystore_read_string(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
 	attribute.type = keystore_read_uint32(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
@@ -273,19 +275,15 @@ struct keystore_attribute keystore_attribute_unmarshal(int fd, int *err) {
 			attribute.hash.uint32 = keystore_read_uint32(fd, &local_err);
 			break;
 		default:
-			fprintf(
-				stderr, "Failed to parse attribute: Invalid attribute type (%u)\n",
-				attribute.type
-			);
-
-			local_err = 1;
+			local_err = error_unmarshal_make(NULL, ERROR_UNMARSHAL_TYPE_INVALID_ATTRIBUTE_TYPE);
 	}
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
 	if(err != NULL) {
-		*err = 0;
+		*err = NULL;
 	}
 
 	return attribute;
@@ -298,22 +296,25 @@ fail:
 	return (struct keystore_attribute){0};
 }
 
-struct keystore_keyring_item keystore_keyring_item_unmarshal(int fd, int *err) {
-	int local_err = 0;
+struct keystore_keyring_item keystore_keyring_item_unmarshal(int fd, error_t *err) {
+	error_t local_err = NULL;
 	struct keystore_keyring_item item = {0};
 
 	item.id = keystore_read_uint32(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
 	item.type = keystore_read_uint32(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
 	item.num_attributes = keystore_read_uint32(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
@@ -321,12 +322,13 @@ struct keystore_keyring_item keystore_keyring_item_unmarshal(int fd, int *err) {
 	for(uint32_t i = 0; i < item.num_attributes; i++) {
 		item.attributes[i] = keystore_attribute_unmarshal(fd, &local_err);
 
-		if(local_err != 0) {
+		if(local_err != NULL) {
 			for(uint32_t j = 0; j < i; j++) {
 				keystore_attribute_free(item.attributes + j);
 			}
 			free(item.attributes);
 
+			local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_CHILD_ERROR);
 			goto fail;
 		}
 	}
@@ -341,68 +343,79 @@ fail:
 	return (struct keystore_keyring_item){0};
 }
 
-struct keyring keyring_unmarshal(int fd, int *err) {
-	int local_err = 0;
+struct keyring keyring_unmarshal(int fd, error_t *err) {
+	error_t local_err = NULL;
 	struct keyring keyring = {0};
 
 	char signature[16] = {0};
 	keystore_read_bytes(fd, signature, 16, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
 	if(memcmp("GnomeKeyring\n\r\0\n", signature, 16) != 0) {
-		local_err = 2;
+		local_err = error_unmarshal_make(NULL, ERROR_UNMARSHAL_TYPE_SIGNATURE_MISMATCH);
 		goto fail;
 	}
 
 	keyring.version.version = keystore_read_uint16(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
 	keyring.version.crypto = keystore_read_uint8(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
 	keyring.version.hash = keystore_read_uint8(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
 	keyring.name = keystore_read_string(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail;
 	}
 
 	keyring.ctime = keystore_read_uint64(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail_name;
 	}
 
 	keyring.mtime = keystore_read_uint64(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail_name;
 	}
 
 	keyring.flags = keystore_read_uint32(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail_name;
 	}
 
 	keyring.lock_timeout = keystore_read_uint32(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail_name;
 	}
 
 	keyring.hash_iterations = keystore_read_uint32(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail_name;
 	}
 
 	keystore_read_bytes(fd, keyring.salt, 8, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail_name;
 	}
 
@@ -410,13 +423,15 @@ struct keyring keyring_unmarshal(int fd, int *err) {
 	for(int i = 0; i < 4; i++) {
 		keystore_read_uint32(fd, &local_err);
 
-		if(local_err != 0) {
+		if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 			goto fail_name;
 		}
 	}
 
 	keyring.num_items = keystore_read_uint32(fd, &local_err);
-	if(local_err != 0) {
+	if(local_err != NULL) {
+		local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_READ_ERROR);
 		goto fail_name;
 	}
 
@@ -424,12 +439,13 @@ struct keyring keyring_unmarshal(int fd, int *err) {
 	for(uint32_t i = 0; i < keyring.num_items; i++) {
 		keyring.items[i] = keystore_keyring_item_unmarshal(fd, &local_err);
 
-		if(local_err != 0) {
+		if(local_err != NULL) {
 			for(uint32_t j = 0; j < i; j++) {
 				keystore_keyring_item_free(keyring.items + j);
 			}
 			free(keyring.items);
 
+			local_err = error_unmarshal_make(local_err, ERROR_UNMARSHAL_TYPE_CHILD_ERROR);
 			goto fail_name;
 		}
 	}

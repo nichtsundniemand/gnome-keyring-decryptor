@@ -141,165 +141,178 @@ int teardown_read_string(void **state) {
 }
 
 void keystore_read_uint8_should_fail_on_invalid_fd() {
-	int err = 0;
+	error_t err = 0;
 	keystore_read_uint8(-1, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 }
 
 void keystore_read_uint8_should_fail_on_no_input(void **state) {
 	struct no_input_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	keystore_read_uint8(test_state->empty_fd, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 }
 
 void keystore_read_uint8_should_succeed_with_input(void **state) {
 	struct read_uint_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	uint8_t value = keystore_read_uint8(test_state->full_fd, &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_int_equal((uint8_t)test_state->magic, value);
 }
 
 void keystore_read_uint16_should_fail_on_invalid_fd() {
-	int err = 0;
+	error_t err = 0;
 	keystore_read_uint16(-1, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 }
 
 void keystore_read_uint16_should_fail_on_no_input(void **state) {
 	struct no_input_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	keystore_read_uint16(test_state->empty_fd, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 }
 
 void keystore_read_uint16_should_succeed_with_input(void **state) {
 	struct read_uint_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	uint16_t value = keystore_read_uint16(test_state->full_fd, &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_int_equal((uint16_t)test_state->magic, value);
 }
 
 void keystore_read_uint32_should_fail_on_invalid_fd() {
-	int err = 0;
+	error_t err = 0;
 	keystore_read_uint32(-1, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 }
 
 void keystore_read_uint32_should_fail_on_no_input(void **state) {
 	struct no_input_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	keystore_read_uint32(test_state->empty_fd, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 }
 
 void keystore_read_uint32_should_succeed_with_input(void **state) {
 	struct read_uint_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	uint32_t value = keystore_read_uint32(test_state->full_fd, &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_int_equal((uint32_t)test_state->magic, value);
 }
 
 void keystore_read_uint64_should_fail_on_invalid_fd() {
-	int err = 0;
+	error_t err = 0;
 	keystore_read_uint64(-1, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 }
 
 void keystore_read_uint64_should_fail_on_no_input(void **state) {
 	struct no_input_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	keystore_read_uint64(test_state->empty_fd, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 }
 
 void keystore_read_uint64_should_succeed_with_input(void **state) {
 	struct read_uint_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	uint64_t value = keystore_read_uint64(test_state->full_fd, &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_int_equal((uint64_t)test_state->magic, value);
 }
 
 void keystore_read_bytes_should_fail_on_invalid_fd() {
-	int err = 0;
+	error_t err = 0;
 	uint8_t value[8] = {0};
 	keystore_read_bytes(-1, value, sizeof(value), &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 }
 
 void keystore_read_bytes_should_fail_on_no_input(void **state) {
 	struct no_input_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	uint8_t value[8] = {0};
 	keystore_read_bytes(test_state->empty_fd, value, sizeof(value), &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 }
 
 void keystore_read_bytes_should_succeed_with_input(void **state) {
 	struct read_bytes_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	uint8_t *value = test_malloc(sizeof(test_state->bytes));
 	keystore_read_bytes(test_state->byte_fd, value, sizeof(test_state->bytes), &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_memory_equal(test_state->bytes, value, sizeof(test_state->bytes));
 
 	test_free(value);
 }
 
 void keystore_read_string_should_fail_on_invalid_fd() {
-	int err = 0;
+	error_t err = 0;
 	char *value = keystore_read_string(-1, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 	assert_null(value);
 }
 
 void keystore_read_string_should_fail_on_no_input(void **state) {
 	struct no_input_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	char *value = keystore_read_string(test_state->empty_fd, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 	assert_null(value);
 }
 
 void keystore_read_string_should_succeed_and_return_null_on_ffffffff(void **state) {
 	struct read_string_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	char *value = keystore_read_string(test_state->null_string_fd, &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_null(value);
 }
 
 void keystore_read_string_should_fail_on_input_too_short_for_size(void **state) {
 	struct read_string_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	char *value = keystore_read_string(test_state->short_string_fd, &err);
-	assert_int_not_equal(0, err);
+	assert_non_null(err);
+	error_free(err);
 	assert_null(value);
 }
 
 void keystore_read_string_should_succeed_and_return_string_on_proper_input(void **state) {
 	struct read_string_state *test_state = *state;
 
-	int err = 0;
+	error_t err = 0;
 	char *value = keystore_read_string(test_state->proper_string_fd, &err);
-	assert_int_equal(0, err);
+	assert_null(err);
 	assert_string_equal(test_state->proper_string, value);
 
 	free(value);
