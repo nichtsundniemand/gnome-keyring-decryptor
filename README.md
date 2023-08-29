@@ -27,6 +27,10 @@ Build depencies:
    in accordance with the [`docopt`](http://docopt.org/)-specification.
 
    Meson needs to be able to find this in your Python's search-path.
+ * [`cmocka`](https://cmocka.org/): Test-framework used by the unit-tests.
+
+   This should be available through most distribution's repositories. Meson needs to
+   be able to find this as a dependency.
 
 To build this project simply follow the usual `meson`-procedure:
 ```sh
@@ -38,7 +42,7 @@ Afterwards, if everything went well, the executable can be found under `build/gn
 
 ## Usage
 
-To use this tool simply call `gnome-keyring-decryptor <keyring>` with `<keyring>`
+To use this tool simply call `gnome-keyring-decryptor --keyring=<file>` with `<file>`
 being the path to the keyring-file on the command line.
 
 The contents of the keyring will then be output on `stdout`.

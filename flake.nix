@@ -40,7 +40,9 @@
 
       devShells.default = pkgs.mkShell {
         packages = [
+          pkgs.cmocka
           pkgs.ninja
+          pkgs.pkg-config
           (pkgs.python311.withPackages
             (ps: with ps; [
               self.docopt-c.${system}

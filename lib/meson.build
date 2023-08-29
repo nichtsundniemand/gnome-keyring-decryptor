@@ -4,22 +4,9 @@
 # of the GNU General Public License Version 3.
 # A copy of this license can be found in the project's `LICENSE`-file.
 
-project(
-	'gnome-keyring-decryptor',
-	'c',
-	version: '0.1',
-	default_options: [
-		'buildtype=release',
-		'c_std=c11',
-		'warning_level=3'
-	]
-)
+subdir('keyring')
 
-subdir('lib')
-subdir('src')
-
-executable(
-	meson.project_name(),
-	link_with: main_lib,
-	install: true
+keyring_dep = declare_dependency(
+	link_with: keyring_lib,
+	include_directories: '.'
 )

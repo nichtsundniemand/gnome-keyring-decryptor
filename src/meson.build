@@ -52,5 +52,5 @@ config_header = configure_file(
 main_lib = static_library(
 	'main',
 	'main.c', config_header,
-	dependencies: [docopt_dep],
+	dependencies: [docopt_dep, keyring_dep]
 )
