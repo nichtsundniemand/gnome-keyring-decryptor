@@ -30,7 +30,7 @@ Build depencies:
 
 To build this project simply follow the usual `meson`-procedure:
 ```sh
-$ meson setuo build
+$ meson setup build
 $ ninja -C build
 ```
 
